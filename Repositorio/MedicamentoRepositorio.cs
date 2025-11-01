@@ -1,110 +1,54 @@
-﻿using System.Data.SqlClient;
+﻿using Microsoft.EntityFrameworkCore;
 using Veterinaria.Clases;
+using Veterinaria.DBcontext;
 
 namespace Veterinaria.Repositorio
 {
     public class MedicamentoRepositorio
     {
-        private readonly string _connectionString;
+        private readonly VeterinariaContext _context;
 
-        public MedicamentoRepositorio(IConfiguration configuration)
+        public MedicamentoRepositorio(VeterinariaContext context)
         {
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _context = context;
         }
 
         public async Task<IEnumerable<Medicamento>> GetAllAsync()
         {
-            var medicamentos = new List<Medicamento>();
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
-                var query = "SELECT Id, Nombre FROM Medicamentos";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                {
-                    while (await reader.ReadAsync())
-                    {
-                        medicamentos.Add(new Medicamento
-                        {
-                            Id = reader.GetInt32(0),
-                            Nombre = reader.GetString(1)
-                        });
-                    }
-                }
-            }
-            return medicamentos;
+            return await _context.Medicamentos.ToListAsync();
         }
 
         public async Task<Medicamento?> GetByIdAsync(int id)
         {
-            Medicamento? medicamento = null;
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
-                var query = "SELECT Id, Nombre FROM Medicamentos WHERE Id=@Id";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Id", id);
-                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
-                    {
-                        if (await reader.ReadAsync())
-                        {
-                            medicamento = new Medicamento
-                            {
-                                Id = reader.GetInt32(0),
-                                Nombre = reader.GetString(1)
-                            };
-                        }
-                    }
-                }
-            }
-            return medicamento;
+            return await _context.Medicamentos
+                .FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<Medicamento> AddAsync(Medicamento medicamento)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
-                var query = @"INSERT INTO Medicamentos (Nombre) OUTPUT INSERTED.Id VALUES (@Nombre)";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Nombre", medicamento.Nombre);
-                    medicamento.Id = (int)await cmd.ExecuteScalarAsync();
-                }
-            }
+            _context.Medicamentos.Add(medicamento);
+            await _context.SaveChangesAsync();
             return medicamento;
         }
 
         public async Task<Medicamento?> UpdateAsync(Medicamento medicamento)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
-                var query = "UPDATE Medicamentos SET Nombre=@Nombre WHERE Id=@Id";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Id", medicamento.Id);
-                    cmd.Parameters.AddWithValue("@Nombre", medicamento.Nombre);
-                    int rows = await cmd.ExecuteNonQueryAsync();
-                    return rows > 0 ? medicamento : null;
-                }
-            }
+            var existente = await _context.Medicamentos.FindAsync(medicamento.Id);
+            if (existente == null) return null;
+
+            _context.Entry(existente).CurrentValues.SetValues(medicamento);
+            await _context.SaveChangesAsync();
+            return existente;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            using (SqlConnection conn = new SqlConnection(_connectionString))
-            {
-                await conn.OpenAsync();
-                var query = "DELETE FROM Medicamentos WHERE Id=@Id";
-                using (SqlCommand cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@Id", id);
-                    int rows = await cmd.ExecuteNonQueryAsync();
-                    return rows > 0;
-                }
-            }
+            var medicamento = await _context.Medicamentos.FindAsync(id);
+            if (medicamento == null) return false;
+
+            _context.Medicamentos.Remove(medicamento);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

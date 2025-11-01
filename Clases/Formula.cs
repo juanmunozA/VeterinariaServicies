@@ -1,7 +1,10 @@
-﻿namespace Veterinaria.Clases
+﻿using System.Text.Json.Serialization;
+
+namespace Veterinaria.Clases
 {
     public class Formula
     {
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int Id { get; set; }
 
         public string Codigo { get; set; } = string.Empty;
@@ -10,3 +13,6 @@
         public Mascota? Mascota { get; set; }
     }
 }
+
+
+

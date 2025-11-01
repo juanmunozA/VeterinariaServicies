@@ -1,7 +1,12 @@
-﻿using Veterinaria.Repositorio;
+﻿using Microsoft.EntityFrameworkCore;
+using Veterinaria.DBcontext;
+using Veterinaria.Repositorio;
 using Veterinaria.Servicio;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<VeterinariaContext>(options =>
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Configurar controladores
 builder.Services.AddControllers();
