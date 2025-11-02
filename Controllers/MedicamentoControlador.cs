@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Veterinaria.Clases;
+using Veterinaria.DTOs;
 using Veterinaria.Servicio;
 
 namespace Veterinaria.Controllers
@@ -26,10 +27,21 @@ namespace Veterinaria.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Medicamento>> Create(Medicamento medicamento)
+        public async Task<ActionResult<MedicamentoDTO>> Create(MedicamentoDTO dto)
         {
+            var medicamento = new Medicamento
+            {
+                Nombre = dto.Nombre
+            };
+
             var creado = await _servicio.CreateAsync(medicamento);
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creado);
+
+            var result = new MedicamentoDTO
+            {
+                Nombre = creado.Nombre
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, result);
         }
 
         [HttpPut("{id}")]

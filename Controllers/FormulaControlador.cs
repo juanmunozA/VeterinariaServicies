@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Veterinaria.Clases;
 using Veterinaria.Servicio;
+using Veterinaria.DTOs;
 
 namespace Veterinaria.Controllers
 {
@@ -26,10 +27,24 @@ namespace Veterinaria.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Formula>> Create(Formula formula)
+        public async Task<ActionResult<FormulaDTO>> Create(FormulaDTO dto)
         {
-            var creada = await _servicio.CreateAsync(formula);
-            return CreatedAtAction(nameof(GetById), new { id = creada.Id }, creada);
+            var formula = new Formula
+            {
+                Codigo = dto.Codigo,
+                MascotaId = dto.MascotaId
+            };
+
+            var creado = await _servicio.CreateAsync(formula);
+
+            var result = new FormulaDTO
+            {
+                    
+                Codigo = creado.Codigo,
+                MascotaId = creado.MascotaId
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, result);
         }
 
         [HttpPut("{id}")]

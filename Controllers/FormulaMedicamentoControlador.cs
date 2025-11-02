@@ -1,49 +1,80 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Veterinaria.Clases;
+using Veterinaria.DTOs;
 using Veterinaria.Servicio;
 
 namespace Veterinaria.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class HistorialControlador : ControllerBase
+    public class FormulaMedicamentoControlador : ControllerBase
     {
-        private readonly HistorialServicio _servicio;
+        private readonly FormulaMedicamentoServicio _servicio;
 
-        public HistorialControlador(HistorialServicio servicio)
+        public FormulaMedicamentoControlador(FormulaMedicamentoServicio servicio)
         {
             _servicio = servicio;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<HistorialClinico>> GetAll() => await _servicio.GetAllAsync();
+        public async Task<IEnumerable<FormulaMedicamento>> GetAll() => await _servicio.GetAllAsync();
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<HistorialClinico>> GetById(int id)
+        public async Task<ActionResult<FormulaMedicamento>> GetById(int id)
         {
-            var historial = await _servicio.GetByIdAsync(id);
-            return historial == null ? NotFound() : Ok(historial);
+            var fm = await _servicio.GetByIdAsync(id);
+            return fm == null ? NotFound() : Ok(fm);
         }
 
         [HttpPost]
-        public async Task<ActionResult<HistorialClinico>> Create(HistorialClinico historial)
+        public async Task<ActionResult<FormulaMedicamentoDTO>> Create(FormulaMedicamentoDTO dto)
         {
-            var creado = await _servicio.CreateAsync(historial);
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creado);
+            var fm = new FormulaMedicamento
+            {
+                FormulaId = dto.FormulaId,
+                MedicamentoId = dto.MedicamentoId,
+                Cantidad = dto.Cantidad
+            };
+
+            var creado = await _servicio.CreateAsync(fm);
+
+            var result = new FormulaMedicamentoDTO
+            {
+                FormulaId = creado.FormulaId,
+                MedicamentoId = creado.MedicamentoId,
+                Cantidad = creado.Cantidad
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<HistorialClinico>> Update(int id, HistorialClinico historial)
+        public async Task<ActionResult<FormulaMedicamentoDTO>> Update(int id, FormulaMedicamentoDTO dto)
         {
-            if (id != historial.Id) return BadRequest();
-            var actualizado = await _servicio.UpdateAsync(historial);
-            return actualizado == null ? NotFound() : Ok(actualizado);
+            var existente = await _servicio.GetByIdAsync(id);
+            if (existente == null) return NotFound();
+
+            existente.FormulaId = dto.FormulaId;
+            existente.MedicamentoId = dto.MedicamentoId;
+            existente.Cantidad = dto.Cantidad;
+
+            var actualizado = await _servicio.UpdateAsync(existente);
+
+            var result = new FormulaMedicamentoDTO
+            {
+                FormulaId = actualizado!.FormulaId,
+                MedicamentoId = actualizado.MedicamentoId,
+                Cantidad = actualizado.Cantidad
+            };
+
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            return await _servicio.DeleteAsync(id) ? NoContent() : NotFound();
+            var eliminado = await _servicio.DeleteAsync(id);
+            return eliminado ? NoContent() : NotFound();
         }
     }
 }

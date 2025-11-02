@@ -18,7 +18,7 @@ namespace Veterinaria.Clases
         [JsonIgnore]
         public Cliente? Cliente { get; set; }
 
-        public int? RazaId { get; set; }
+        public int?  RazaId { get; set; }
         [JsonIgnore]
         public Raza? Raza { get; set; }
     }
