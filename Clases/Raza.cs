@@ -7,10 +7,11 @@ namespace Veterinaria.Clases
     public class Raza
     {
        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int Id { get; set; }
+        public int RazaId { get; set; }
 
-        [Required]
+        
         public string NombreRaza { get; set; } = string.Empty;
+        [Required]
         [JsonIgnore]
         public List<Mascota> Mascotas { get; set; } = new();
     }

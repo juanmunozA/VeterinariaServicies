@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Veterinaria.DBcontext;
+using Veterinaria.DBContext;
 
 #nullable disable
 
 namespace Veterinaria.Migrations
 {
     [DbContext(typeof(VeterinariaContext))]
-    [Migration("20251101214606_Inicial")]
-    partial class Inicial
+    [Migration("20251115225504_Database")]
+    partial class Database
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,39 +27,36 @@ namespace Veterinaria.Migrations
 
             modelBuilder.Entity("Veterinaria.Clases.Cliente", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ClienteId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ClienteId"));
 
                     b.Property<string>("Cedula")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Correo")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("ClienteId");
 
                     b.ToTable("Clientes");
                 });
 
             modelBuilder.Entity("Veterinaria.Clases.Formula", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("FormulaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FormulaId"));
 
                     b.Property<string>("Codigo")
                         .IsRequired()
@@ -68,7 +65,7 @@ namespace Veterinaria.Migrations
                     b.Property<int>("MascotaId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("FormulaId");
 
                     b.HasIndex("MascotaId");
 
@@ -77,11 +74,11 @@ namespace Veterinaria.Migrations
 
             modelBuilder.Entity("Veterinaria.Clases.FormulaMedicamento", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ForMedicamentoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ForMedicamentoId"));
 
                     b.Property<int>("Cantidad")
                         .HasColumnType("int");
@@ -92,7 +89,7 @@ namespace Veterinaria.Migrations
                     b.Property<int>("MedicamentoId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("ForMedicamentoId");
 
                     b.HasIndex("FormulaId");
 
@@ -103,11 +100,11 @@ namespace Veterinaria.Migrations
 
             modelBuilder.Entity("Veterinaria.Clases.HistorialClinico", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("HistorialClinicoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HistorialClinicoId"));
 
                     b.Property<int>("ClienteId")
                         .HasColumnType("int");
@@ -132,7 +129,7 @@ namespace Veterinaria.Migrations
                     b.Property<int>("VeterinarioId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("HistorialClinicoId");
 
                     b.HasIndex("ClienteId");
 
@@ -147,16 +144,13 @@ namespace Veterinaria.Migrations
 
             modelBuilder.Entity("Veterinaria.Clases.Mascota", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("MascotaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MascotaId"));
 
                     b.Property<int>("ClienteId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ClienteId1")
                         .HasColumnType("int");
 
                     b.Property<int>("Edad")
@@ -169,11 +163,9 @@ namespace Veterinaria.Migrations
                     b.Property<int?>("RazaId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("MascotaId");
 
                     b.HasIndex("ClienteId");
-
-                    b.HasIndex("ClienteId1");
 
                     b.HasIndex("RazaId");
 
@@ -182,45 +174,45 @@ namespace Veterinaria.Migrations
 
             modelBuilder.Entity("Veterinaria.Clases.Medicamento", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("MedicamentoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicamentoId"));
 
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("MedicamentoId");
 
                     b.ToTable("Medicamentos");
                 });
 
             modelBuilder.Entity("Veterinaria.Clases.Raza", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("RazaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RazaId"));
 
                     b.Property<string>("NombreRaza")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("RazaId");
 
                     b.ToTable("Razas");
                 });
 
             modelBuilder.Entity("Veterinaria.Clases.Veterinario", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("VeterinarioId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VeterinarioId"));
 
                     b.Property<string>("Documento")
                         .IsRequired()
@@ -230,7 +222,7 @@ namespace Veterinaria.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Id");
+                    b.HasKey("VeterinarioId");
 
                     b.ToTable("Veterinarios");
                 });
@@ -240,7 +232,7 @@ namespace Veterinaria.Migrations
                     b.HasOne("Veterinaria.Clases.Mascota", "Mascota")
                         .WithMany()
                         .HasForeignKey("MascotaId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Mascota");
@@ -303,18 +295,15 @@ namespace Veterinaria.Migrations
             modelBuilder.Entity("Veterinaria.Clases.Mascota", b =>
                 {
                     b.HasOne("Veterinaria.Clases.Cliente", "Cliente")
-                        .WithMany()
+                        .WithMany("Mascotas")
                         .HasForeignKey("ClienteId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Veterinaria.Clases.Cliente", null)
-                        .WithMany("Mascotas")
-                        .HasForeignKey("ClienteId1");
-
                     b.HasOne("Veterinaria.Clases.Raza", "Raza")
                         .WithMany("Mascotas")
-                        .HasForeignKey("RazaId");
+                        .HasForeignKey("RazaId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Cliente");
 

@@ -5,7 +5,7 @@ namespace Veterinaria.Clases
     public class Formula
     {
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int Id { get; set; }
+        public int FormulaId { get; set; }
 
         public string Codigo { get; set; } = string.Empty;
 

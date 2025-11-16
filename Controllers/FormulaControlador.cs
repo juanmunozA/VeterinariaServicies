@@ -30,7 +30,7 @@ namespace Veterinaria.Controllers
         public async Task<ActionResult<FormulaDTO>> Create(FormulaDTO dto)
         {
             var formula = new Formula
-            {
+            {   FormulaId = dto.FormulaId,
                 Codigo = dto.Codigo,
                 MascotaId = dto.MascotaId
             };
@@ -39,18 +39,18 @@ namespace Veterinaria.Controllers
 
             var result = new FormulaDTO
             {
-                    
+                FormulaId = creado.FormulaId,   
                 Codigo = creado.Codigo,
                 MascotaId = creado.MascotaId
             };
 
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = creado.FormulaId }, result);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Formula>> Update(int id, Formula formula)
         {
-            if (id != formula.Id) return BadRequest();
+            if (id != formula.FormulaId) return BadRequest();
             var actualizada = await _servicio.UpdateAsync(formula);
             return actualizada == null ? NotFound() : Ok(actualizada);
         }

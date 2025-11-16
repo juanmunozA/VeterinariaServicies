@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Veterinaria.Clases;
 using Veterinaria.Servicio;
+using Veterinaria.DTOs;
 
 namespace Veterinaria.Controllers
 {
@@ -16,28 +17,70 @@ namespace Veterinaria.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Raza>> GetAll() => await _servicio.GetAllAsync();
+        public async Task<IEnumerable<RazaDTO>> GetAll()
+        {
+            var razas = await _servicio.GetAllAsync();
+            return razas.Select(r => new RazaDTO
+            {
+                RazaId = r.RazaId,
+                Nombre = r.Nombre
+            });
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Raza>> GetById(int id)
+        public async Task<ActionResult<RazaDTO>> GetById(int id)
         {
             var raza = await _servicio.GetByIdAsync(id);
-            return raza == null ? NotFound() : Ok(raza);
+            if (raza == null) return NotFound();
+
+            var dto = new RazaDTO
+            {
+                RazaId = raza.RazaId,
+                Nombre = raza.Nombre
+            };
+            return Ok(dto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Raza>> Create(Raza raza)
+        public async Task<ActionResult<RazaDTO>> Create(RazaDTO dto)
         {
+            var raza = new Raza
+            {   Raza = dto.RazaId
+                Nombre = dto.Nombre
+            };
+
             var creada = await _servicio.CreateAsync(raza);
-            return CreatedAtAction(nameof(GetById), new { id = creada.Id }, creada);
+
+            var result = new RazaDTO
+            {
+                RazaId = creada.RazaId,
+                Nombre = creada.Nombre
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = creada.RazaId }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Raza>> Update(int id, Raza raza)
+        public async Task<ActionResult<RazaDTO>> Update(int id, RazaDTO dto)
         {
-            if (id != raza.Id) return BadRequest();
+            if (id != dto.RazaId) return BadRequest();
+
+            var raza = new Raza
+            {
+                RazaId = id,
+                Nombre = dto.Nombre
+            };
+
             var actualizada = await _servicio.UpdateAsync(raza);
-            return actualizada == null ? NotFound() : Ok(actualizada);
+            if (actualizada == null) return NotFound();
+
+            var result = new RazaDTO
+            {
+                RazaId = actualizada.RazaId,
+                Nombre = actualizada.Nombre
+            };
+
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]

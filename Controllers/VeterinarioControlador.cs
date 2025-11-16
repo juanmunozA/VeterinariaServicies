@@ -30,7 +30,7 @@ namespace Veterinaria.Controllers
         public async Task<ActionResult<VeterinarioDTO>> Create(VeterinarioDTO dto)
         {
             var veterinario = new Veterinario
-            {
+            {   VeterinarioId = dto.VeterinarioId,
                 Documento = dto.Documento,
                 Nombre = dto.Nombre
             };
@@ -38,18 +38,18 @@ namespace Veterinaria.Controllers
             var creado = await _servicio.CreateAsync(veterinario);
 
             var result = new VeterinarioDTO
-            {
+            {   VeterinarioId = creado.VeterinarioId,
                 Documento = creado.Documento,
                 Nombre = creado.Nombre
             };
 
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = creado.VeterinarioId }, result);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Veterinario>> Update(int id, Veterinario veterinario)
         {
-            if (id != veterinario.Id) return BadRequest();
+            if (id != veterinario.VeterinarioId) return BadRequest();
             var actualizado = await _servicio.UpdateAsync(veterinario);
             return actualizado == null ? NotFound() : Ok(actualizado);
         }

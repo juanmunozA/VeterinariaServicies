@@ -30,7 +30,7 @@ namespace Veterinaria.Controllers
         public async Task<ActionResult<HistorialClinicoDTO>> Create(HistorialClinicoDTO dto)
         {
             var historial = new HistorialClinico
-            {
+            {   HistorialClinicoId = dto.HistorialClinicoId,
                 Fecha = dto.Fecha,
                 MascotaId = dto.MascotaId,
                 Observaciones = dto.Observaciones
@@ -39,13 +39,13 @@ namespace Veterinaria.Controllers
             var creado = await _servicio.CreateAsync(historial);
 
             var result = new HistorialClinicoDTO
-            {
+            {   HistorialClinicoId = creado.HistorialClinicoId,
                 Fecha = creado.Fecha,
                 MascotaId = creado.MascotaId,
                 Observaciones = creado.Observaciones
             };
 
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = creado.HistorialClinicoId }, result);
         }
 
 
@@ -53,7 +53,7 @@ namespace Veterinaria.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult<HistorialClinico>> Update(int id, HistorialClinico historial)
         {
-            if (id != historial.Id) return BadRequest();
+            if (id != historial.HistorialClinicoId) return BadRequest();
             var actualizado = await _servicio.UpdateAsync(historial);
             return actualizado == null ? NotFound() : Ok(actualizado);
         }

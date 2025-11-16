@@ -29,32 +29,40 @@ namespace Veterinaria.Controllers
         [HttpPost]
         public async Task<ActionResult<MascotaDTO>> Create(MascotaDTO dto)
         {
-            var mascota = new Mascota
+            // Buscar el cliente por cédula
+            var cliente = await _servicio.BuscarClientePorCedulaAsync(dto.CedulaCliente);
+            if (cliente == null)
             {
+                return NotFound(new { mensaje = "Cliente no encontrado" });
+            }
+
+            // Crear la mascota asociada al cliente
+            var mascota = new Mascota
+            {   MascotaId = dto.MascotaId,
                 Nombre = dto.Nombre,
                 Edad = dto.Edad,
-                ClienteId = dto.ClienteId,
+                ClienteId = cliente.ClienteId, 
                 RazaId = dto.RazaId
             };
 
             var creado = await _servicio.CreateAsync(mascota);
 
             var result = new MascotaDTO
-            {
+            {   MascotaId = creado.MascotaId,
                 Nombre = creado.Nombre,
                 Edad = creado.Edad,
-                ClienteId = creado.ClienteId,
+                ClienteId = null,
                 RazaId = creado.RazaId
             };
 
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = creado.MascotaId }, result);
         }
 
 
         [HttpPut("{id}")]
         public async Task<ActionResult<Mascota>> Update(int id, Mascota mascota)
         {
-            if (id != mascota.Id) return BadRequest();
+            if (id != mascota.MascotaId) return BadRequest();
             var actualizada = await _servicio.UpdateAsync(mascota);
             return actualizada == null ? NotFound() : Ok(actualizada);
         }

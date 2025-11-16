@@ -30,7 +30,7 @@ namespace Veterinaria.Controllers
         public async Task<ActionResult<FormulaMedicamentoDTO>> Create(FormulaMedicamentoDTO dto)
         {
             var fm = new FormulaMedicamento
-            {
+            {   ForMedicamentoId = dto.ForMedicamentoId,
                 FormulaId = dto.FormulaId,
                 MedicamentoId = dto.MedicamentoId,
                 Cantidad = dto.Cantidad
@@ -39,13 +39,13 @@ namespace Veterinaria.Controllers
             var creado = await _servicio.CreateAsync(fm);
 
             var result = new FormulaMedicamentoDTO
-            {
+            {   ForMedicamentoId = creado.ForMedicamentoId,
                 FormulaId = creado.FormulaId,
                 MedicamentoId = creado.MedicamentoId,
                 Cantidad = creado.Cantidad
             };
 
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, result);
+            return CreatedAtAction(nameof(GetById), new { id = creado.ForMedicamentoId }, result);
         }
 
         [HttpPut("{id}")]
@@ -53,7 +53,7 @@ namespace Veterinaria.Controllers
         {
             var existente = await _servicio.GetByIdAsync(id);
             if (existente == null) return NotFound();
-
+            existente.ForMedicamentoId = dto.ForMedicamentoId;
             existente.FormulaId = dto.FormulaId;
             existente.MedicamentoId = dto.MedicamentoId;
             existente.Cantidad = dto.Cantidad;
@@ -61,7 +61,7 @@ namespace Veterinaria.Controllers
             var actualizado = await _servicio.UpdateAsync(existente);
 
             var result = new FormulaMedicamentoDTO
-            {
+            {   ForMedicamentoId = actualizado.ForMedicamentoId, 
                 FormulaId = actualizado!.FormulaId,
                 MedicamentoId = actualizado.MedicamentoId,
                 Cantidad = actualizado.Cantidad

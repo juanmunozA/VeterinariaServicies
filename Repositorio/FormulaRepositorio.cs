@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Veterinaria.Clases;
-using Veterinaria.DBcontext;
+using Veterinaria.DBContext;
 
 namespace Veterinaria.Repositorio
 {
@@ -24,7 +24,7 @@ namespace Veterinaria.Repositorio
         {
             return await _context.Formulas
                 .Include(f => f.Mascota)
-                .FirstOrDefaultAsync(f => f.Id == id);
+                .FirstOrDefaultAsync(f => f.FormulaId == id);
         }
 
         public async Task<Formula> AddAsync(Formula formula)
@@ -36,7 +36,7 @@ namespace Veterinaria.Repositorio
 
         public async Task<Formula?> UpdateAsync(Formula formula)
         {
-            var existente = await _context.Formulas.FindAsync(formula.Id);
+            var existente = await _context.Formulas.FindAsync(formula.FormulaId);
             if (existente == null) return null;
 
             _context.Entry(existente).CurrentValues.SetValues(formula);

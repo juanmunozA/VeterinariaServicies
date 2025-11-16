@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Veterinaria.Clases;
-using Veterinaria.DBcontext;
+using Veterinaria.DBContext;
 
 namespace Veterinaria.Repositorio
 {
@@ -30,7 +30,7 @@ namespace Veterinaria.Repositorio
                 .Include(h => h.Cliente)
                 .Include(h => h.Formula)
                 .Include(h => h.Veterinario)
-                .FirstOrDefaultAsync(h => h.Id == id);
+                .FirstOrDefaultAsync(h => h.HistorialClinicoId == id);
         }
 
         public async Task<HistorialClinico> AddAsync(HistorialClinico historial)
@@ -42,7 +42,7 @@ namespace Veterinaria.Repositorio
 
         public async Task<HistorialClinico?> UpdateAsync(HistorialClinico historial)
         {
-            var existente = await _context.HistorialesClinicos.FindAsync(historial.Id);
+            var existente = await _context.HistorialesClinicos.FindAsync(historial.HistorialClinicoId);
             if (existente == null) return null;
 
             _context.Entry(existente).CurrentValues.SetValues(historial);

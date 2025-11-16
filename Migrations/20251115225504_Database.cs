@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Veterinaria.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class Database : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -15,115 +15,110 @@ namespace Veterinaria.Migrations
                 name: "Clientes",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    ClienteId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Nombre = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    Cedula = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    Correo = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Cedula = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Correo = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Clientes", x => x.Id);
+                    table.PrimaryKey("PK_Clientes", x => x.ClienteId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Medicamentos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    MedicamentoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Medicamentos", x => x.Id);
+                    table.PrimaryKey("PK_Medicamentos", x => x.MedicamentoId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Razas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    RazaId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NombreRaza = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Razas", x => x.Id);
+                    table.PrimaryKey("PK_Razas", x => x.RazaId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Veterinarios",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    VeterinarioId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Documento = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Veterinarios", x => x.Id);
+                    table.PrimaryKey("PK_Veterinarios", x => x.VeterinarioId);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Mascotas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    MascotaId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Edad = table.Column<int>(type: "int", nullable: false),
                     ClienteId = table.Column<int>(type: "int", nullable: false),
-                    RazaId = table.Column<int>(type: "int", nullable: true),
-                    ClienteId1 = table.Column<int>(type: "int", nullable: true)
+                    RazaId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Mascotas", x => x.Id);
+                    table.PrimaryKey("PK_Mascotas", x => x.MascotaId);
                     table.ForeignKey(
                         name: "FK_Mascotas_Clientes_ClienteId",
                         column: x => x.ClienteId,
                         principalTable: "Clientes",
-                        principalColumn: "Id",
+                        principalColumn: "ClienteId",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Mascotas_Clientes_ClienteId1",
-                        column: x => x.ClienteId1,
-                        principalTable: "Clientes",
-                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Mascotas_Razas_RazaId",
                         column: x => x.RazaId,
                         principalTable: "Razas",
-                        principalColumn: "Id");
+                        principalColumn: "RazaId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Formulas",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    FormulaId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Codigo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     MascotaId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Formulas", x => x.Id);
+                    table.PrimaryKey("PK_Formulas", x => x.FormulaId);
                     table.ForeignKey(
                         name: "FK_Formulas_Mascotas_MascotaId",
                         column: x => x.MascotaId,
                         principalTable: "Mascotas",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "MascotaId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "FormulaMedicamentos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    ForMedicamentoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FormulaId = table.Column<int>(type: "int", nullable: false),
                     MedicamentoId = table.Column<int>(type: "int", nullable: false),
@@ -131,18 +126,18 @@ namespace Veterinaria.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FormulaMedicamentos", x => x.Id);
+                    table.PrimaryKey("PK_FormulaMedicamentos", x => x.ForMedicamentoId);
                     table.ForeignKey(
                         name: "FK_FormulaMedicamentos_Formulas_FormulaId",
                         column: x => x.FormulaId,
                         principalTable: "Formulas",
-                        principalColumn: "Id",
+                        principalColumn: "FormulaId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FormulaMedicamentos_Medicamentos_MedicamentoId",
                         column: x => x.MedicamentoId,
                         principalTable: "Medicamentos",
-                        principalColumn: "Id",
+                        principalColumn: "MedicamentoId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -150,7 +145,7 @@ namespace Veterinaria.Migrations
                 name: "HistorialesClinicos",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
+                    HistorialClinicoId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Codigo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Fecha = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -162,30 +157,30 @@ namespace Veterinaria.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_HistorialesClinicos", x => x.Id);
+                    table.PrimaryKey("PK_HistorialesClinicos", x => x.HistorialClinicoId);
                     table.ForeignKey(
                         name: "FK_HistorialesClinicos_Clientes_ClienteId",
                         column: x => x.ClienteId,
                         principalTable: "Clientes",
-                        principalColumn: "Id",
+                        principalColumn: "ClienteId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_HistorialesClinicos_Formulas_FormulaId",
                         column: x => x.FormulaId,
                         principalTable: "Formulas",
-                        principalColumn: "Id",
+                        principalColumn: "FormulaId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_HistorialesClinicos_Mascotas_MascotaId",
                         column: x => x.MascotaId,
                         principalTable: "Mascotas",
-                        principalColumn: "Id",
+                        principalColumn: "MascotaId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_HistorialesClinicos_Veterinarios_VeterinarioId",
                         column: x => x.VeterinarioId,
                         principalTable: "Veterinarios",
-                        principalColumn: "Id",
+                        principalColumn: "VeterinarioId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -228,11 +223,6 @@ namespace Veterinaria.Migrations
                 name: "IX_Mascotas_ClienteId",
                 table: "Mascotas",
                 column: "ClienteId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Mascotas_ClienteId1",
-                table: "Mascotas",
-                column: "ClienteId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Mascotas_RazaId",

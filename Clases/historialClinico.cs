@@ -6,7 +6,7 @@ namespace Veterinaria.Clases
     public class HistorialClinico
     {
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public int Id { get; set; }
+        public int HistorialClinicoId { get; set; }
 
         public string Codigo { get; set; } = string.Empty;
 

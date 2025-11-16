@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
+using System.Linq;
 using Veterinaria.Clases;
 using Veterinaria.Servicio;
 using Veterinaria.DTOs;
@@ -9,57 +11,95 @@ namespace Veterinaria.Controllers
     [Route("api/[controller]")]
     public class ClienteControlador : ControllerBase
     {
-        private readonly ClienteServicio _servicio;
+        private readonly ClienteServicio _clienteServicio;
 
-        public ClienteControlador(ClienteServicio servicio)
+        public ClienteControlador(ClienteServicio clienteServicio)
         {
-            _servicio = servicio;
+            _clienteServicio = clienteServicio;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Cliente>> GetAll() => await _servicio.GetAllAsync();
+        public async Task<IActionResult> GetAll()
+        {
+            var clientes = await _clienteServicio.GetAllAsync();
+            var dtos = clientes.Select(c => new ClienteDTO
+            {
+                ClienteId = c.ClienteId,
+                Nombre = c.Nombre,
+                Cedula = c.Cedula,
+                Correo = c.Correo
+            }).ToList();
+            return Ok(dtos);
+        }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cliente>> GetById(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var cliente = await _servicio.GetByIdAsync(id);
-            return cliente == null ? NotFound() : Ok(cliente);
+            var cliente = await _clienteServicio.GetByIdAsync(id);
+            if (cliente == null) return NotFound();
+
+            var dto = new ClienteDTO
+            {
+                ClienteId = cliente.ClienteId,
+                Nombre = cliente.Nombre,
+                Cedula = cliente.Cedula,
+                Correo = cliente.Correo
+            };
+            return Ok(dto);
         }
 
         [HttpPost]
-        public async Task<ActionResult<ClienteDTO>> Create(ClienteDTO dto)
+        public async Task<IActionResult> Create([FromBody] ClienteDTO dto)
         {
             var cliente = new Cliente
-            {
+            {   
                 Nombre = dto.Nombre,
                 Cedula = dto.Cedula,
                 Correo = dto.Correo
             };
 
-            var creado = await _servicio.CreateAsync(cliente);
+            var nuevoCliente = await _clienteServicio.CreateAsync(cliente);
 
-            var creadoDto = new ClienteDTO
-            {
-                Nombre = creado.Nombre,
-                Cedula = creado.Cedula,
-                Correo = creado.Correo
+            var result = new ClienteDTO
+            {   ClienteId = nuevoCliente.ClienteId,
+                Nombre = nuevoCliente.Nombre,
+                Cedula = nuevoCliente.Cedula,
+                Correo = nuevoCliente.Correo
             };
 
-            return CreatedAtAction(nameof(GetById), new { id = creado.Id }, creadoDto);
+            return CreatedAtAction(nameof(GetById), new { id = nuevoCliente.ClienteId }, result);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Cliente>> Update(int id, Cliente cliente)
+        public async Task<IActionResult> Update(int id, [FromBody] ClienteDTO dto)
         {
-            if (id != cliente.Id) return BadRequest();
-            var actualizado = await _servicio.UpdateAsync(cliente);
-            return actualizado == null ? NotFound() : Ok(actualizado);
+            var cliente = new Cliente
+            {
+                ClienteId = id,
+                Nombre = dto.Nombre,
+                Cedula = dto.Cedula,
+                Correo = dto.Correo
+            };
+
+            var actualizado = await _clienteServicio.UpdateAsync(id, cliente);
+            if (actualizado == null) return NotFound();
+
+            var result = new ClienteDTO
+            {
+                ClienteId = actualizado.ClienteId,
+                Nombre = actualizado.Nombre,
+                Cedula = actualizado.Cedula,
+                Correo = actualizado.Correo
+            };
+
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            return await _servicio.DeleteAsync(id) ? NoContent() : NotFound();
+            var eliminado = await _clienteServicio.DeleteAsync(id);
+            return eliminado ? NoContent() : NotFound();
         }
     }
 }

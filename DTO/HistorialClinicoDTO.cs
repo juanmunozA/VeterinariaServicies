@@ -3,7 +3,8 @@
     public class HistorialClinicoDTO
     {
         
-
+        public int HistorialClinicoId { get; set; }    
+        
         public string Codigo { get; set; } = string.Empty;
 
         public DateTime Fecha { get; set; }

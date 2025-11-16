@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Veterinaria.Clases;
-using Veterinaria.DBcontext;
+using Veterinaria.DBContext;
 
 namespace Veterinaria.Repositorio
 {
@@ -13,50 +13,67 @@ namespace Veterinaria.Repositorio
             _context = context;
         }
 
-        public async Task<IEnumerable<Cliente>> GetAllAsync()
+        public async Task<List<Cliente>> GetAllAsync()
         {
-            // Obtiene todos los clientes junto con sus mascotas
-            return await _context.Clientes
-                .Include(c => c.Mascotas)
-                .ToListAsync();
+            return await _context.Clientes.ToListAsync();
+        }
+
+        public Cliente? ObtenerPorId(int id)
+        {
+            return _context.Clientes.FirstOrDefault(c => c.ClienteId == id);
         }
 
         public async Task<Cliente?> GetByIdAsync(int id)
         {
-            // Busca cliente con sus mascotas
-            return await _context.Clientes
-                .Include(c => c.Mascotas)
-                .FirstOrDefaultAsync(c => c.Id == id);
+            return await _context.Clientes.FindAsync(id);
         }
 
-        public async Task<Cliente> AddAsync(Cliente cliente)
+        public async Task<Cliente> CreateAsync(Cliente cliente)
         {
             _context.Clientes.Add(cliente);
             await _context.SaveChangesAsync();
             return cliente;
         }
 
-        public async Task<Cliente?> UpdateAsync(Cliente cliente)
+        public async Task<Cliente?> UpdateAsync(int id, Cliente cliente)
         {
-            var existente = await _context.Clientes.FindAsync(cliente.Id);
-            if (existente == null)
+            var clienteExistente = await _context.Clientes.FindAsync(id);
+            if (clienteExistente == null)
+            {
                 return null;
+            }
 
-            // Actualiza los valores existentes con los nuevos
-            _context.Entry(existente).CurrentValues.SetValues(cliente);
+            clienteExistente.Nombre = cliente.Nombre;
+            clienteExistente.Correo = cliente.Correo; // Cambiado de Email a Correo
+            // Actualiza otros campos según sea necesario
+
+            _context.Clientes.Update(clienteExistente);
             await _context.SaveChangesAsync();
-            return existente;
+            return clienteExistente;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
             if (cliente == null)
+            {
                 return false;
+            }
 
             _context.Clientes.Remove(cliente);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        // Nuevo: buscar cliente por correo (para login)
+        public async Task<Cliente?> ObtenerPorCorreoAsync(string correo)
+        {
+            return await _context.Clientes.FirstOrDefaultAsync(c => c.Correo == correo);
+        }
+
+        public async Task<Cliente?> ObtenerPorCedulaAsync(string cedula)
+        {
+            return await _context.Clientes.FirstOrDefaultAsync(c => c.Cedula == cedula);
         }
     }
 }

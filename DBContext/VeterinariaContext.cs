@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Veterinaria.Clases;
 
-namespace Veterinaria.DBcontext
+namespace Veterinaria.DBContext
 {
     public class VeterinariaContext : DbContext
     {
@@ -21,19 +21,21 @@ namespace Veterinaria.DBcontext
         {
             base.OnModelCreating(modelBuilder);
 
-            // 🔹 Evitar ciclos de cascada en toda la jerarquía
+            // Configurar relación entre Mascota y Cliente
             modelBuilder.Entity<Mascota>()
                 .HasOne(m => m.Cliente)
-                .WithMany()
+                .WithMany(c => c.Mascotas)
                 .HasForeignKey(m => m.ClienteId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict); // Evitar cascada
 
-            modelBuilder.Entity<Formula>()
-                .HasOne(f => f.Mascota)
-                .WithMany()
-                .HasForeignKey(f => f.MascotaId)
-                .OnDelete(DeleteBehavior.Restrict);
+            // Configurar relación entre Mascota y Raza
+            modelBuilder.Entity<Mascota>()
+                .HasOne(m => m.Raza)
+                .WithMany(r => r.Mascotas)
+                .HasForeignKey(m => m.RazaId)
+                .OnDelete(DeleteBehavior.Restrict); // Evitar cascada
 
+            // 🔹 Evitar ciclos de cascada en toda la jerarquía
             modelBuilder.Entity<HistorialClinico>()
                 .HasOne(h => h.Mascota)
                 .WithMany()
