@@ -23,7 +23,7 @@ namespace Veterinaria.Controllers
             return razas.Select(r => new RazaDTO
             {
                 RazaId = r.RazaId,
-                Nombre = r.Nombre
+                NombreRaza = r.NombreRaza
             });
         }
 
@@ -36,7 +36,7 @@ namespace Veterinaria.Controllers
             var dto = new RazaDTO
             {
                 RazaId = raza.RazaId,
-                Nombre = raza.Nombre
+                NombreRaza = raza.NombreRaza
             };
             return Ok(dto);
         }
@@ -45,8 +45,8 @@ namespace Veterinaria.Controllers
         public async Task<ActionResult<RazaDTO>> Create(RazaDTO dto)
         {
             var raza = new Raza
-            {   Raza = dto.RazaId
-                Nombre = dto.Nombre
+            {   RazaId = dto.RazaId,
+                NombreRaza = dto.NombreRaza
             };
 
             var creada = await _servicio.CreateAsync(raza);
@@ -54,7 +54,7 @@ namespace Veterinaria.Controllers
             var result = new RazaDTO
             {
                 RazaId = creada.RazaId,
-                Nombre = creada.Nombre
+                NombreRaza = creada.NombreRaza
             };
 
             return CreatedAtAction(nameof(GetById), new { id = creada.RazaId }, result);
@@ -68,7 +68,7 @@ namespace Veterinaria.Controllers
             var raza = new Raza
             {
                 RazaId = id,
-                Nombre = dto.Nombre
+                NombreRaza = dto.NombreRaza
             };
 
             var actualizada = await _servicio.UpdateAsync(raza);
@@ -77,7 +77,7 @@ namespace Veterinaria.Controllers
             var result = new RazaDTO
             {
                 RazaId = actualizada.RazaId,
-                Nombre = actualizada.Nombre
+                NombreRaza = actualizada.NombreRaza
             };
 
             return Ok(result);
