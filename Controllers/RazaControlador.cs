@@ -67,7 +67,7 @@ namespace Veterinaria.Controllers
 
             var raza = new Raza
             {
-                RazaId = id,
+                RazaId = dto.RazaId,
                 NombreRaza = dto.NombreRaza
             };
 
